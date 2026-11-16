@@ -2,7 +2,7 @@ import { kv } from '@vercel/kv';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({ 
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: "ВАШ_КЛЮЧ_ИЗ_GOOGLE",
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/" 
 });
 
