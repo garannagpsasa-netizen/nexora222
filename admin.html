@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ-панель | Nexora AI</title>
+    <style>
+        body { font-family: sans-serif; background: #0d1117; color: #c9d1d9; margin: 0; display: flex; height: 100vh; }
+        .sidebar { width: 300px; background: #161b22; border-right: 1px solid #30363d; overflow-y: auto; }
+        .conv-item { padding: 15px; border-bottom: 1px solid #30363d; cursor: pointer; }
+        .conv-item:hover { background: #21262d; }
+        .chat-area { flex: 1; display: flex; flex-direction: column; }
+        .messages { flex: 1; padding: 20px; overflow-y: auto; }
+        .msg { margin-bottom: 10px; padding: 10px; border-radius: 5px; max-width: 60%; }
+        .msg.user { background: #21262d; }
+        .msg.assistant { background: #238636; margin-left: auto; }
+        .input-area { display: flex; padding: 20px; border-top: 1px solid #30363d; }
+        input { flex: 1; padding: 10px; background: #0d1117; color: white; border: 1px solid #30363d; }
+        button { padding: 10px 20px; background: #238636; color: white; border: none; cursor: pointer; }
+        #login-screen { display: flex; flex-direction: column; width: 300px; margin: auto; text-align: center; }
+    </style>
+</head>
+<body>
+    <div id="login-screen">
+        <h2>Вход в Nexora AI</h2>
+        <input type="password" id="pass" placeholder="Пароль" style="margin-bottom: 10px;">
+        <button onclick="login()">Войти</button>
+    </div>
+
+    <div id="admin-panel" style="display: none; width: 100%; height: 100%;">
+        <div class="sidebar" id="conv-list"></div>
+        <div class="chat-area">
+            <div class="messages" id="messages"></div>
+            <div class="input-area">
+                <input type="text" id="msg-input" placeholder="Ответ клиенту...">
+                <button onclick="sendMsg()">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSession = null;
+
+        async function login() {
+            const pass = document.getElementById('pass').value;
+            const res = await fetch('/api/admin', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ action: 'login', password: pass })
+            });
+            if (res.ok) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'flex';
+                loadConversations();
+                setInterval(loadConversations, 3000);
+            } else {
+                alert('Неверный пароль');
+            }
+        }
+
+        async function loadConversations() {
+            const res = await fetch('/api/admin?action=conversations');
+            if (!res.ok) return;
+            const data = await res.json();
+            const list = document.getElementById('conv-list');
+            list.innerHTML = data.map(c => `
+                <div class="conv-item" onclick="selectConv('${c.sessionId}')">
+                    <b>${c.sessionId.slice(0, 8)}...</b><br>
+                    <small>${c.lastMessagePreview || 'Нет сообщений'}</small>
+                </div>
+            `).join('');
+        }
+
+        async function selectConv(id) {
+            currentSession = id;
+            loadMessages();
+        }
+
+        async function loadMessages() {
+            if (!currentSession) return;
+            const res = await fetch(`/api/admin?action=messages&sessionId=${currentSession}`);
+            if (!res.ok) return;
+            const data = await res.json();
+            const box = document.getElementById('messages');
+            box.innerHTML = data.map(m => `<div class="msg ${m.role}">${m.text}</div>`).join('');
+            box.scrollTop = box.scrollHeight;
+        }
+
+        async function sendMsg() {
+            const text = document.getElementById('msg-input').value;
+            if (!text || !currentSession) return;
+            document.getElementById('msg-input').value = '';
+            await fetch('/api/admin', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ action: 'send', sessionId: currentSession, text })
+            });
+            loadMessages();
+        }
+    </script>
+</body>
+</html>
