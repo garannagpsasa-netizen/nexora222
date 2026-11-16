@@ -1,79 +1,210 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-<!-- This site is hosted on Netlify. Anyone can build and deploy a site
-     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=0180acc1-c585-4a60-8536-c7c75a7a874f
-     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090b13">
-  <title>Nexora AI — ИИ-решения для бизнеса</title>
-  <meta name="description" content="Nexora AI — ИИ-ассистенты, чат-боты и автоматизация бизнес-процессов.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexora AI — ИИ-решения для бизнеса</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #090b13; --text: #ffffff; --accent: #3ee4df; --card: #151925; }
+        body { margin: 0; font-family: 'Manrope', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .logo { font-weight: 800; font-size: 20px; display: flex; align-items: center; gap: 10px; }
+        .logo-icon { width: 30px; height: 30px; background: var(--accent); border-radius: 8px; display: flex; justify-content: center; align-items: center; color: #000; font-weight: bold; }
+        .hero { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; }
+        h1 { font-size: 48px; max-width: 800px; margin-bottom: 20px; line-height: 1.2; }
+        .highlight { color: var(--accent); }
+        p { font-size: 18px; color: #a0a5b5; max-width: 600px; margin-bottom: 40px; }
+        .btn-main { background: var(--accent); color: #000; padding: 15px 30px; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(62,228,223,0.3); }
+        
+        /* Чат */
+        .chat-widget { position: fixed; bottom: 30px; right: 30px; width: 380px; height: 600px; background: var(--card); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; flex-direction: column; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); z-index: 1000; }
+        .chat-header { background: #1a1f2e; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .chat-title { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+        .chat-status { width: 10px; height: 10px; background: #3fb950; border-radius: 50%; }
+        .close-chat { background: none; border: none; color: #a0a5b5; font-size: 24px; cursor: pointer; }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
+        .msg.bot { background: #23293a; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg.user { background: var(--accent); color: #000; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .chat-input-area { padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 10px; }
+        .chat-input { flex: 1; background: #090b13; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; color: white; outline: none; font-family: inherit; }
+        .chat-input:focus { border-color: var(--accent); }
+        .send-btn { background: var(--accent); color: #000; border: none; border-radius: 8px; padding: 0 20px; cursor: pointer; font-weight: 700; }
+        
+        /* Админка */
+        .admin-panel { display: none; flex-direction: column; height: 100%; background: var(--card); }
+        .admin-header { padding: 15px; background: #d29922; color: #000; font-weight: bold; text-align: center; }
+        .conv-list { flex: 1; overflow-y: auto; }
+        .conv-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; font-size: 14px; }
+        .conv-item:hover { background: #23293a; }
+        .admin-input-area { padding: 15px; display: flex; gap: 10px; border-top: 1px solid rgba(255,255,255,0.1); }
+    </style>
 </head>
 <body>
-  <div class="glow glow-one"></div><div class="glow glow-two"></div>
-  <header class="topbar">
-    <a class="brand" href="#top"><span class="brand-mark">N</span><span>NEXORA <b>AI</b></span></a>
-    <nav><a href="#solutions">Решения</a><a href="#process">Как работаем</a><a href="#contact">Контакты</a></nav>
-    <a class="top-cta" href="#contact">Обсудить проект <span>↗</span></a>
-  </header>
+    <header>
+        <div class="logo"><div class="logo-icon">N</div> NEXORA AI</div>
+    </header>
+    
+    <main class="hero">
+        <h1>ИИ, который решает <span class="highlight">реальные задачи</span></h1>
+        <p>Создаём ИИ-агентов для компаний: от умных помощников до автоматизации процессов.</p>
+        <button class="btn-main" onclick="toggleChat()">Спросить Олега</button>
+    </main>
 
-  <main id="top">
-    <section class="hero">
-      <div class="eyebrow"><span class="pulse"></span> SMART SUPPORT. ALWAYS HERE.</div>
-      <h1>ИИ, который решает<br><span>реальные задачи</span></h1>
-      <p class="hero-copy">Создаём ИИ-агентов для компаний: от умных помощников и чат-ботов до автоматизации процессов и индивидуальных AI-систем.</p>
-      <div class="hero-actions"><a class="button primary" href="#contact">Обсудить задачу <span>↗</span></a><a class="button secondary" href="#solutions">Наши решения <span>↓</span></a></div>
-      <div class="hero-note"><span class="tiny-orb"></span> Разрабатываем решения под задачи вашего бизнеса</div>
-      <div class="hero-art" aria-hidden="true">
-        <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
-        <div class="core"><span>N</span><small>AI CORE</small></div>
-        <div class="float-card card-a"><i>✳</i><span>AI-ассистенты</span><b>01</b></div>
-        <div class="float-card card-b"><i>⌘</i><span>Автоматизация</span><b>02</b></div>
-        <div class="float-card card-c"><i>◈</i><span>Умная поддержка</span><b>03</b></div>
-      </div>
-    </section>
+    <!-- Окно чата -->
+    <div class="chat-widget" id="chatWidget">
+        <div class="chat-header">
+            <div class="chat-title">
+                <div class="chat-status"></div>
+                Олег — ИИ-консультант
+            </div>
+            <button class="close-chat" onclick="toggleChat()">×</button>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="msg bot">Здравствуйте! Я Олег, ИИ-консультант Nexora AI. Чем могу помочь?</div>
+        </div>
+        
+        <div class="chat-input-area" id="chatInputArea">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Напишите сообщение..." onkeypress="handleEnter(event)">
+            <button class="send-btn" onclick="sendMessage()">→</button>
+        </div>
 
-    <section class="section" id="solutions">
-      <div class="section-head"><div class="eyebrow">ЧТО МЫ СОЗДАЁМ</div><h2>Технологии с понятной<br><span>пользой для бизнеса</span></h2><p>Не просто внедряем модные технологии — проектируем инструменты под процессы, цели и специфику вашей компании.</p></div>
-      <div class="grid">
-        <article class="service"><div class="service-icon">✳</div><div class="service-no">01 / ASSISTANTS</div><h3>AI-ассистенты</h3><p>Умные помощники для сотрудников и клиентов: отвечают на вопросы, помогают с информацией и типовыми задачами.</p></article>
-        <article class="service"><div class="service-icon">⌘</div><div class="service-no">02 / AUTOMATION</div><h3>Автоматизация процессов</h3><p>Сокращаем ручную работу, связываем сервисы и помогаем выстроить более быстрые рабочие процессы.</p></article>
-        <article class="service"><div class="service-icon">◈</div><div class="service-no">03 / CHATBOTS</div><h3>Чат-боты и поддержка</h3><p>Решения для общения с клиентами, обработки обращений и первичной консультации в удобных каналах.</p></article>
-        <article class="service"><div class="service-icon">▤</div><div class="service-no">04 / KNOWLEDGE</div><h3>Работа с документами</h3><p>Помощь в поиске, разборе и структурировании корпоративной информации и документов.</p></article>
-        <article class="service"><div class="service-icon">⌁</div><div class="service-no">05 / CUSTOM AI</div><h3>Индивидуальные AI-системы</h3><p>Разработка программных решений с учётом отрасли, внутренних данных и задач вашей команды.</p></article>
-        <article class="service"><div class="service-icon">↗</div><div class="service-no">06 / INTEGRATIONS</div><h3>Интеграции</h3><p>Подключаем AI-инструменты к существующим сайтам, сервисам и рабочим сценариям компании.</p></article>
-      </div>
-    </section>
+        <!-- Скрытая админка -->
+        <div class="admin-panel" id="adminPanel">
+            <div class="admin-header">Режим Администратора</div>
+            <div class="conv-list" id="adminConvList"></div>
+            <div class="admin-input-area" id="adminInputArea" style="display:none;">
+                <input type="text" class="chat-input" id="adminInput" placeholder="Ответ клиенту...">
+                <button class="send-btn" onclick="sendAdminMessage()">→</button>
+            </div>
+        </div>
+    </div>
 
-    <section class="process section" id="process">
-      <div class="section-head"><div class="eyebrow">ПОНЯТНЫЙ ПРОЦЕСС</div><h2>От идеи до <span>решения</span></h2><p>Начинаем с вашей задачи и вместе определяем, какой результат действительно нужен бизнесу.</p></div>
-      <div class="steps">
-        <article><span>01</span><div><small>ЗНАКОМСТВО</small><h3>Изучаем задачу</h3><p>Обсуждаем процессы, цели и ограничения, чтобы понять, где ИИ принесёт практическую пользу.</p></div></article>
-        <article><span>02</span><div><small>РАЗРАБОТКА</small><h3>Создаём решение</h3><p>Подбираем подход, разрабатываем и согласовываем функциональность будущего продукта.</p></div></article>
-        <article><span>03</span><div><small>ЗАПУСК</small><h3>Внедряем и улучшаем</h3><p>Помогаем запустить инструмент и доработать его на основе обратной связи и реальных сценариев.</p></div></article>
-      </div>
-    </section>
+    <script>
+        let sessionId = localStorage.getItem('nexora_session');
+        if (!sessionId) {
+            sessionId = 'sess_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('nexora_session', sessionId);
+        }
+        
+        let isAdminMode = false;
+        let currentAdminSession = null;
 
-    <section class="contact section" id="contact">
-      <div><div class="eyebrow">СВЯЗАТЬСЯ С NEXORA AI</div><h2>Расскажите, что хотите <span>улучшить</span></h2><p>Опишите задачу вашей компании — обсудим идею, возможный формат решения и следующие шаги.</p></div>
-      <div class="contact-panel"><div class="contact-label">НАПИШИТЕ НАМ</div><a href="https://t.me/sanekrickowens">Telegram · @sanekrickowens ↗</a><a href="https://t.me/vl6diks_fn">Telegram · @vl6diks_fn ↗</a><div class="contact-label">MAX / ЗВОНОК</div><p>+7 977 554-77-76<br>+7 991 757-2843</p><small>На связи ежедневно · 10:00–22:00</small></div>
-    </section>
-  </main>
-  <footer><a class="brand" href="#top"><span class="brand-mark">N</span><span>NEXORA <b>AI</b></span></a><span>© 2026 Nexora AI. Smart Support. Always Here.</span></footer>
+        function toggleChat() {
+            const widget = document.getElementById('chatWidget');
+            widget.style.display = widget.style.display === 'flex' ? 'none' : 'flex';
+        }
 
-  <button class="chat-launcher" id="chatLauncher" aria-label="Открыть чат с Олегом"><span class="launcher-spark">✳</span><span>Спросить Олега</span><b>↗</b></button>
-  <section class="chat-window" id="chatWindow" aria-label="Чат с Олегом" aria-hidden="true">
-    <header class="chat-head"><div class="oleg-avatar">N</div><div class="chat-title"><b>Олег <span class="online-dot"></span></b><small>ИИ-консультант Nexora AI</small></div><button id="chatClose" aria-label="Закрыть чат">×</button></header>
-    <div class="chat-messages" id="chatMessages"><div class="message bot">Здравствуйте! Я Олег, ИИ-консультант Nexora AI. Помогу разобраться в наших решениях и ответить на вопросы о сотрудничестве. Чем могу быть полезен?</div><div class="suggestions"><button>Какие услуги вы предлагаете?</button><button>Как начать сотрудничество?</button></div></div>
-    <form class="chat-form" id="chatForm"><input id="chatInput" maxlength="1200" autocomplete="off" placeholder="Напишите сообщение..." aria-label="Ваше сообщение"><button type="submit" aria-label="Отправить">↑</button></form>
-    <div class="chat-foot">Олег отвечает с помощью ИИ · Не отправляйте конфиденциальные данные</div>
-  </section>
-  <script src="/chat.js"></script>
+        function handleEnter(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+
+            // Проверка на команду /admin
+            if (text === '/admin') {
+                const pass = prompt('Введите секретный код:');
+                if (pass === 'SANEKVLADPUTUSPEH') {
+                    enterAdminMode();
+                } else {
+                    addMessage('bot', 'Доступ запрещен.');
+                }
+                return;
+            }
+
+            addMessage('user', text);
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessionId, text })
+                });
+                const data = await res.json();
+                
+                if (data.aiDisabled) {
+                    addMessage('bot', 'Администратор сейчас на связи, ИИ отключен.');
+                } else if (data.reply) {
+                    addMessage('bot', data.reply);
+                } else if (data.error) {
+                    addMessage('bot', 'Ошибка: ' + data.error);
+                }
+            } catch (err) {
+                addMessage('bot', 'Ошибка соединения с сервером.');
+            }
+        }
+
+        function addMessage(role, text) {
+            const box = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = 'msg ' + role;
+            div.innerText = text;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        // --- Логика Админки ---
+        function enterAdminMode() {
+            isAdminMode = true;
+            document.getElementById('chatMessages').style.display = 'none';
+            document.getElementById('chatInputArea').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'flex';
+            loadConversations();
+        }
+
+        async function loadConversations() {
+            const res = await fetch('/api/admin?action=conversations');
+            if (!res.ok) return;
+            const data = await res.json();
+            const list = document.getElementById('adminConvList');
+            list.innerHTML = '';
+            data.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'conv-item';
+                div.innerText = 'ID: ' + c.sessionId + ' | ' + (c.lastMessagePreview || 'Нет сообщений');
+                div.onclick = () => selectConversation(c.sessionId);
+                list.appendChild(div);
+            });
+        }
+
+        async function selectConversation(id) {
+            currentAdminSession = id;
+            const res = await fetch('/api/admin?action=messages&sessionId=' + id);
+            if (!res.ok) return;
+            const data = await res.json();
+            const box = document.getElementById('chatMessages');
+            box.style.display = 'flex';
+            box.innerHTML = '';
+            data.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'msg ' + (m.role === 'user' ? 'user' : 'bot');
+                div.innerText = m.text;
+                box.appendChild(div);
+            });
+            document.getElementById('adminInputArea').style.display = 'flex';
+            box.scrollTop = box.scrollHeight;
+        }
+
+        async function sendAdminMessage() {
+            const input = document.getElementById('adminInput');
+            const text = input.value.trim();
+            if (!text || !currentAdminSession) return;
+            input.value = '';
+            
+            await fetch('/api/admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'send', sessionId: currentAdminSession, text })
+            });
+            selectConversation(currentAdminSession);
+        }
+    </script>
 </body>
-</html><script async src="/.netlify/scripts/ar" data-netlify-deploy-id="6afafd53989d6a8c77a6a8cf" data-netlify-site-id="0180acc1-c585-4a60-8536-c7c75a7a874f" data-agent-runner-id="6afafca9c2b31513aa9c7211"></script>
-<script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="0180acc1-c585-4a60-8536-c7c75a7a874f" data-app-host="app.netlify.com" data-account-tier="free"></script>
+</html>
